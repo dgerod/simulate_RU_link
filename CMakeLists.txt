@@ -18,7 +18,7 @@ SET(MOC_HDRS  glwidget.h  window.h)
 
 # Regular cpp sources
 SET(CPP_SRCS  window.cpp glwidget.cpp simulation.cpp graphics.cpp helpers.cpp gfxl/base.cpp gfxl/model.cpp  
-              model/KinematicsModel.cpp model/Poly3Trajectory.cpp)
+              model/KinematicsModel.cpp model/Movement.cpp model/Poly3Profile.cpp)
 
 # Run moc on header files with Q_OBJECT
 QT4_WRAP_CPP( MOC_SRCS ${MOC_HDRS} )

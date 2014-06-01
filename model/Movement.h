@@ -5,7 +5,7 @@
 #define MODEL_MOVEMENT_H
 
 #include <vector>
-#include "Poly3Trajectory.h"
+#include "Poly3Profile.h"
 
 class Movement
 {
