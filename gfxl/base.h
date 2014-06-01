@@ -1,15 +1,14 @@
 // =============================================================================
 //
 // =============================================================================
-#ifndef GFXL_GRAPHICS_H
-#define GFXL_GRAPHICS_H
+#ifndef GFXL_BASE_H
+#define GFXL_BASE_H
 
 #include <iostream>
 #include <vector>
 #include <kdl/frames.hpp>
-#include "common.h"
 
-namespace gfx {
+namespace gfxl {
 
 // -----------------------------------------------------------------------------
 class Object

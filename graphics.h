@@ -7,10 +7,14 @@
 #include "gfxl/base.h"
 #include "gfxl/model.h"
 
+using namespace gfxl;
+
 class Graphics
 {
-  public:
-
+public:
+  RefFrame _origin;
+  Floor _floor;
+  Model _model;
 };
 
 #endif

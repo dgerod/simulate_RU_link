@@ -23,9 +23,11 @@
 
 #include <math.h>
 #include <QtGui>
-#include <QtOpenGL>
+#include <QtDebug>
+#include <QTextStream>
 #include <GL/glut.h>
 
+#include "helpers.h"
 #include "glwidget.h"
 
 /* Function to build our font list */
@@ -47,11 +49,11 @@ GLWidget::GLWidget (QWidget* Parent)
     _xRot = 0; _yRot = 0; _zoom = 1;
 
     // Frame in the origin
-    _origin.setPosition(0, 0, 0);
+    _gfx._origin.setPosition(0, 0, 0);
 
     // Load kinematics model and prepare graphics
-    _simulation._model.initialize();
-    _model.initialize( _simulation._model );
+    _sim._model.initialize();
+    _gfx._model.initialize( _sim._model );
 }
 
 // -----------------------------------------------------------------------------
@@ -61,7 +63,7 @@ GLWidget::~GLWidget ()
     glDeleteLists(_base, 96);
     makeCurrent();
 
-    _model.finalize();
+    _gfx._model.finalize();
 }
 
 // -----------------------------------------------------------------------------
@@ -185,9 +187,9 @@ GLWidget::paintGL ()
     // Draw scene
     // ----------------------------------------------
 
-    //_origin.drawIt();
-    _floor.drawIt();
-    _model.drawIt();
+    _gfx._origin.drawIt();
+    _gfx._floor.drawIt();
+    _gfx._model.drawIt();
 
     glFinish();
 }
@@ -291,11 +293,14 @@ GLWidget::moveByJoints ()
 {
     std::cout << "[GLWidget::moveByJoints]" << std::endl;
 
-    // ----------------------------------------------------
-
-    int nj = _simulation._model._chain.getNrOfJoints();
+    QString msg;
+    int nj = _sim._model._chain.getNrOfJoints();
     KDL::JntArray q(nj);
     KDL::Frame pose;
+
+    // Validate input
+    // ----------------------------------------------------
+
 
     QString str = _inputPose;
 
@@ -304,43 +309,74 @@ GLWidget::moveByJoints ()
 
     if( list.length() != nj )
     {
-        std::cout << "ERROR: Incorrect input" << std::endl;
+        std::cout << "ERROR: Incorrect input = " << str.toStdString() << std::endl;
+        emit showMessage("ERROR - Incorrect input");
         return;
     }
 
     for(unsigned int idx=0; idx<list.length(); idx++)
     {
-        q(idx) = list[0].toDouble();
+        bool validate;
+        q(idx) = std::cout << "Q = "q << std::endl;
+        list[idx].toDouble(&validate);
+
+        if( validate == false )
+        {
+            emit std::cout << "Q = "q << std::endl;
+            showMessage("ERROR - Incorrect input");
+            return;
+        }
     }
+
+    printf("q(0) = %f, q(1) = %f, q(2) = %f\n", q(0), q(1), q(2));
 
     // ----------------------------------------------------
 
-    //q(0) = 0;
-    //q(1) = 0;
-    //q(2) = M_PI/4;
+    if( _sim._model.jntsToCart(q, pose) == true)
+    {
+        _sim._model._joints = q;
+        _gfx._model.update(_sim._model, _sim._model._joints);
 
-    printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
-    _simulation._model.jntsToCart(q, pose);
-    std::cout << pose << std::endl;
+        printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
+        std::cout << pose << std::endl;
 
-    _simulation._model._joints = q;
-    _model.update(_simulation._model, _simulation._model._joints);
+        frame_to_QString(pose, msg);
+        emit writeSolution(msg);
+        emit showMessage("OK");
+    }
+    else
+    {
+        emit writeSolution(msg);
+        emit showMessage("ERROR - No solution");
+    }
 
     /*
     // Get current positon
     // IK of target position
     // Interpolate
-    _simulation.model.getJoints(qi);
-    _simulation._model.cartToJnts(pose, qf);
-    list = _simulation._movement.intp(qi, qf);
+    _sim.model.getJoints(qi);
+    _sim._model.cartToJnts(pose, qf);
+    list = _sim._movement.intp(qi, qf);
 
     // DK of all position
-    foreach( list )
+    foreach( list )xRotationChanged
     {
       qk <-- list
-      _simulation._model.jntsToCart(qk, pose);
+      _sim._model.jntsToCart(qk, pose);
       _model.update(pose);
     }
+    */
+
+    frame_to_QString(pose, msg);
+    emit writeSolution(msg);
+    emit showMessage("OK");
+
+    /*
+    QString msg;
+    std::ostringstream stream;
+
+    stream << pose.p << " " << pose.M.;
+    msg = QString::fromStdString(stream.str());
     */
 
     update();
@@ -350,7 +386,7 @@ GLWidget::moveByJoints ()
 void
 GLWidget::moveByPose ()
 {
-    std::cout << "[GLWidget::moveBypose]" << std::endl;
+    emit showMessage("ERROR - Funcition not implemented");
     update();
 }
 

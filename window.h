@@ -27,6 +27,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QLineEdit>
+#include <QPlainTextEdit>
 #include "glwidget.h"
 
 class QSlider;
@@ -43,10 +44,13 @@ private:
     QSlider *createSlider();
 
     GLWidget* glWidget;
-    QTimer* click; //timer to weak up animation frame
-    QLineEdit* leInputInfo;
+    QTimer* click;
+
+    QLineEdit* txInputInfo;
     QPushButton* btDkMove;
     QPushButton* btIkMove;
+    QLineEdit* txSolutionInfo;
+    QLineEdit* txInfoMsg;
 
     QSlider* xSlider;
     QPushButton* button;

@@ -4,12 +4,13 @@
 
 #include <math.h>
 #include <GL/glut.h>
+#include "common.h"
 #include "base.h"
 
 #define RAD_TO_DEG(x)   (180/M_PI)*x
 
 // -----------------------------------------------------------------------------
-namespace gfx {
+namespace gfxl {
 
 // -----------------------------------------------------------------------------
 Object::Object ()
@@ -84,18 +85,14 @@ RefFrame::drawIt ()
     float origin[3] = {0,0,0};
     float xp[3] = {1,0,0}, yp[3] = {0,1,0}, zp[3] = {0,0,1};
 
-    float tx, ty, tz;
-    float rx, ry, rz;
-
-    tx = _pose[0]; ty = _pose[1]; tz = _pose[2];
-    rx = _pose[3]; ry = _pose[4]; rz = _pose[5];
-
     glPushMatrix ();
 
-    glTranslatef (tx, ty, tz);
-    glRotatef (rz , 0,0,1);
-    glRotatef (ry, 0,1,0);
-    glRotatef (rx , 1,0,0);
+    // Tr = t*[ (Rx * (Ry*Rz) ]
+
+    glTranslatef (_pose[0], _pose[1], _pose[2]);
+    glRotatef (_pose[3] , 0,0,1);
+    glRotatef (_pose[4], 0,1,0);
+    glRotatef (_pose[5] , 1,0,0);
 
     glScalef (0.25, 0.25, 0.25);
     glLineWidth (2.0);

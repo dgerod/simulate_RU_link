@@ -4,12 +4,12 @@
 
 #include <math.h>
 #include <GL/glut.h>
+#include "../helpers.h"
+#include "common.h"
 #include "model.h"
 
-#define RAD_TO_DEG(x)   (180/M_PI)*x
-
 // -----------------------------------------------------------------------------
-namespace gfx {
+namespace gfxl {
 
 // -----------------------------------------------------------------------------
 Model::Model ()
@@ -32,8 +32,10 @@ Model::initialize (const KinematicsModel& Model)
         double q = 0.0;
         frame = frame * Model._chain.getSegment(ldx).pose( q );
 
-        pose[0] = frame.p[0]; pose[1] = frame.p[1]; pose[2] = frame.p[2];
-        frame.M.GetEulerZYX(pose[5], pose[4], pose[3]);
+        //pose[0] = frame.p[0]; pose[1] = frame.p[1]; pose[2] = frame.p[2];
+        //frame.M.GetEulerZYX(pose[5], pose[4], pose[3]);
+
+        frame_to_opengl(frame, pose);
 
         _objects.push_back(new RefFrame());
         _objects.back()->setPose(pose);
@@ -69,8 +71,10 @@ Model::update (const KinematicsModel& Model, const KDL::JntArray& Joints)
         double q = Joints(ldx);
         frame = frame * Model._chain.getSegment(ldx).pose( q );
 
-        pose[0] = frame.p[0]; pose[1] = frame.p[1]; pose[2] = frame.p[2];
-        frame.M.GetEulerZYX(pose[5], pose[4], pose[3]);
+        //pose[0] = frame.p[0]; pose[1] = frame.p[1]; pose[2] = frame.p[2];
+        //frame.M.GetEulerZYX(pose[5], pose[4], pose[3]);
+
+        frame_to_opengl(frame, pose);
 
         _objects.back()->setPose(pose);
     }
@@ -96,7 +100,6 @@ Model::drawIt ()
     // Draw cylinder
     glPushMatrix ();
     glTranslatef (-2, -2, 0);
-    glRotatef (0, 1,0,0);
 
     glColor3f(0.8,0.6,0.0);
     gluCylinder(gluNewQuadric(), 0.5, 0.5, 3.0, 10, 25);

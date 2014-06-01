@@ -36,35 +36,44 @@
 qtWindow::qtWindow()
 {
     glWidget = new GLWidget;
-    leInputInfo = new QLineEdit("0.0, 0.0, 0.0");
+    click = new QTimer(this);
+
+    txInputInfo = new QLineEdit("0.0, 0.0, 0.0");
     btDkMove = new QPushButton("Joints");
     btIkMove = new QPushButton("Pose");
-    click = new QTimer(this);
+    txSolutionInfo = new QLineEdit("");
+    txSolutionInfo->setReadOnly(true);
+    txInfoMsg = new QLineEdit("OK");
+    txInfoMsg->setReadOnly(true);
 
     xSlider = createSlider();
 
-    QHBoxLayout *mainLayout = new QHBoxLayout;
-    mainLayout->addWidget(glWidget);
+    QVBoxLayout* mainLayout = new QVBoxLayout;
+    QHBoxLayout* layout2 = new QHBoxLayout;
+    QGridLayout* layout3 = new QGridLayout;
 
-    QGridLayout *kk = new QGridLayout;
+    mainLayout->addLayout(layout2);
+    mainLayout->addWidget(txInfoMsg);
 
-    kk->addWidget(leInputInfo);
-    kk->addWidget(btDkMove);
-    kk->addWidget(btIkMove);
-    mainLayout->addLayout(kk);
+    layout2->addWidget(glWidget);
+    layout2->addLayout(layout3);
+    layout2->addWidget(xSlider);
 
-    mainLayout->addWidget(xSlider);
+    layout3->addWidget(txInputInfo);
+    layout3->addWidget(btDkMove);
+    layout3->addWidget(btIkMove);
+    layout3->addWidget(txSolutionInfo);
+
     setLayout(mainLayout);
 
-    //connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
-    //connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
-
-    connect(leInputInfo, SIGNAL(textChanged(const QString &)), glWidget, SLOT(updateInputPose(const QString &)));
+    connect(txInputInfo, SIGNAL(textChanged(const QString &)), glWidget, SLOT(updateInputPose(const QString &)));
     connect(btIkMove, SIGNAL(clicked()), glWidget, SLOT(moveByPose()));
     connect(btDkMove, SIGNAL(clicked()), glWidget, SLOT(moveByJoints()));
     connect(click, SIGNAL(timeout()), glWidget, SLOT(updateGL()));
+    connect(glWidget, SIGNAL(writeSolution(const QString &)), txSolutionInfo, SLOT(setText(const QString &)));
+    connect(glWidget, SIGNAL(showMessage(const QString &)), txInfoMsg, SLOT(setText(const QString &)));
 
-    //xSlider->setValue(0 * 16);
+    //xSlider->hide();
 
     //QDesktopWidget dw;
     //QRect screenSize = dw.availableGeometry(this);

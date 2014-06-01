@@ -27,6 +27,7 @@
 #include <iostream>
 #include <GL/glut.h>   // The GL Utility Toolkit (Glut) Header
 
+#include "helpers.h"
 #include "graphics.h"
 #include "simulation.h"
 
@@ -56,6 +57,9 @@ public
     void yRotationChanged (int Angle);
     void zoomChanged (int Increment);
 
+    void writeSolution (const QString &);
+    void showMessage (const QString &);
+
 protected:
     void initializeGL ();
     void paintGL ();
@@ -73,7 +77,7 @@ private:
 
     QString _inputPose;
 
-    // Graphics layer
+    // Scene mangement
     // -----------------------------------
 
     GLuint _base;
@@ -83,15 +87,22 @@ private:
     int _xRot, _yRot, _zoom;
     QPoint _lastPos;
 
-    // Scene
-    gfx::Floor _floor;
-    gfx::RefFrame _origin;
-    gfx::Model _model;
 
+    // Scene
     // Simulation engine
     // -----------------------------------
 
-    Simulation _simulation;
+    /*
+    gfx::Floor _floor;
+    gfx::RefFrame _origin;
+    gfx::Model _model;
+    */
+
+    //
+    // -----------------------------------
+
+    Graphics _gfx;
+    Simulation _sim;
 };
 
 #endif

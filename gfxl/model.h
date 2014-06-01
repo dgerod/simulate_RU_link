@@ -7,12 +7,10 @@
 #include <iostream>
 #include <vector>
 #include <kdl/frames.hpp>
-
-#include "common.h"
 #include "base.h"
 #include "../simulation.h"
 
-namespace gfx {
+namespace gfxl {
 
 // -----------------------------------------------------------------------------
 class Model : public Object
@@ -30,7 +28,7 @@ protected:
     //
     // -----------------------------------
 
-    typedef std::vector<gfx::Object*> ObjectList;
+    typedef std::vector<Object*> ObjectList;
     ObjectList _objects;
 };
 // -----------------------------------------------------------------------------

@@ -6,8 +6,6 @@
 
 #include <stdio.h>
 #include <kdl/chain.hpp>
-#include <kdl/chainfksolver.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames_io.hpp>
 
 class KinematicsModel
@@ -15,7 +13,9 @@ class KinematicsModel
 public:
     KinematicsModel();
     bool initialize ();
-    void jntsToCart (const KDL::JntArray& Joints, KDL::Frame& Pose);
+
+    bool jntsToCart (const KDL::JntArray& Joints, KDL::Frame& Pose);
+    bool cartTojnts (const KDL::Frame& Pose, KDL::JntArray& Joints);
 
 public:
     KDL::JntArray _joints;
