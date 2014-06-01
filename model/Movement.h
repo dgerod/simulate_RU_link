@@ -1,8 +1,8 @@
 // =============================================================================
 //
 // =============================================================================
-#ifndef __Movement_H__
-#define __Movement_H__
+#ifndef MODEL_MOVEMENT_H
+#define MODEL_MOVEMENT_H
 
 #include "Poly3Trajectory.h"
 

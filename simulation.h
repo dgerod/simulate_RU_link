@@ -4,8 +4,8 @@
 #ifndef APP_SIMULATION_H__
 #define APP_SIMULATION_H__
 
-#include "KinematicsModel.h"
-#include "Movement.h"
+#include "model/KinematicsModel.h"
+#include "model/Movement.h"
 
 class Simulation
 {

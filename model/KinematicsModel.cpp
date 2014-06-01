@@ -12,6 +12,7 @@ using namespace KDL;
 // -----------------------------------------------------------------------------
 KinematicsModel::KinematicsModel ()
 {
+
 }
 
 // -----------------------------------------------------------------------------
@@ -30,6 +31,10 @@ KinematicsModel::initialize ()
     /// Universal joint (2 dof)
     _chain.addSegment( Segment(Joint(Joint::RotZ),Frame::DH(0, 0, 0, 0) ));
     _chain.addSegment( Segment(Joint(Joint::RotZ),Frame::DH(1/*100*/, -M_PI/2, 0, 0) ));
+
+
+    _joints.resize(_chain.getNrOfJoints());
+    KDL::SetToZero(_joints);
 
     std::cout << "[KinematicsModel::initialize] end" << std::endl;
     return Success;

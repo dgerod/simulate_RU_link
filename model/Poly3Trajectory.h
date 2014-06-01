@@ -1,8 +1,8 @@
 // =============================================================================
 //
 // =============================================================================
-#ifndef __Poly3Trajectory_H__
-#define __Poly3Trajectory_H__
+#ifndef MODEL_POLY3TRAJECTORY_H
+#define MODEL_POLY3TRAJECTORY_H
 
 class Poly3Profile
 {

@@ -1,8 +1,8 @@
 // =============================================================================
 //
 // =============================================================================
-#ifndef __KinematicsModel_H__
-#define __KinematicsModel_H__
+#ifndef MODEL_KINEMATICSMODEL_H
+#define MODEL_KINEMATICSMODEL_H
 
 #include <stdio.h>
 #include <kdl/chain.hpp>
@@ -18,6 +18,8 @@ public:
     void jntsToCart (const KDL::JntArray& Joints, KDL::Frame& Pose);
 
 public:
+    KDL::JntArray _joints;
+    KDL::Frame _tcs0;
     KDL::Chain _chain;
 };
 

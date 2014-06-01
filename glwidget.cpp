@@ -28,6 +28,13 @@
 
 #include "glwidget.h"
 
+/* Function to build our font list */
+void buildFont ( GLuint* base )
+{
+    /* Storage for 96 characters */
+    *base = glGenLists( 96 );
+}
+
 // -----------------------------------------------------------------------------
 GLWidget::GLWidget (QWidget* Parent)
 	: QGLWidget(Parent)
@@ -173,7 +180,7 @@ GLWidget::paintGL ()
 
     glColor3f(0.0f, 1.0f, 0.0f);
     glRasterPos2f(2.6f, -2.2f);
-    //displayText( "Hola" );
+    displayText( "Hola" );
 
     // Draw scene
     // ----------------------------------------------
@@ -314,9 +321,10 @@ GLWidget::moveByJoints ()
 
     printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
     _simulation._model.jntsToCart(q, pose);
-    _model.update( _simulation._model, q);
-
     std::cout << pose << std::endl;
+
+    _simulation._model._joints = q;
+    _model.update(_simulation._model, _simulation._model._joints);
 
     /*
     // Get current positon
