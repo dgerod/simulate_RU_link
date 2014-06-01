@@ -7,8 +7,6 @@
 #include "common.h"
 #include "base.h"
 
-#define RAD_TO_DEG(x)   (180/M_PI)*x
-
 // -----------------------------------------------------------------------------
 namespace gfxl {
 
@@ -41,15 +39,15 @@ Floor::drawIt ()
 
     double minX, maxX, minY, maxY;
 
-    minX = -2; maxX = 2;
-    minY = -2; maxY = 2;
+    minX = -5; maxX = 5;
+    minY = -5; maxY = 5;
 
     glColor3f(.3,.3,.3);
     glBegin (GL_QUADS);
-        glVertex3f ( minX, maxY, -0.001);
-        glVertex3f ( minX, minY, -0.001);
-        glVertex3f ( maxX, minY, -0.001);
-        glVertex3f ( maxX, maxY, -0.001);
+        glVertex3f ( minX, maxY, -0.1);
+        glVertex3f ( minX, minY, -0.1);
+        glVertex3f ( maxX, minY, -0.1);
+        glVertex3f ( maxX, maxY, -0.1);
     glEnd ();
 
     int num = 10;
@@ -72,6 +70,13 @@ Floor::drawIt ()
 }
 
 // -----------------------------------------------------------------------------
+RefFrame::RefFrame ()
+    : Object()
+{
+    _length = 1.0;
+}
+
+// -----------------------------------------------------------------------------
 void
 RefFrame::drawIt ()
 {
@@ -83,16 +88,15 @@ RefFrame::drawIt ()
     std::cout << std::endl;
 
     float origin[3] = {0,0,0};
-    float xp[3] = {1,0,0}, yp[3] = {0,1,0}, zp[3] = {0,0,1};
+    float xp[3] = {_length,0,0}, yp[3] = {0,_length,0}, zp[3] = {0,0,_length};
 
     glPushMatrix ();
 
     // Tr = t*[ (Rx * (Ry*Rz) ]
-
     glTranslatef (_pose[0], _pose[1], _pose[2]);
-    glRotatef (_pose[3] , 0,0,1);
+    glRotatef (_pose[5] , 0,0,1);
     glRotatef (_pose[4], 0,1,0);
-    glRotatef (_pose[5] , 1,0,0);
+    glRotatef (_pose[3] , 1,0,0);
 
     glScalef (0.25, 0.25, 0.25);
     glLineWidth (2.0);

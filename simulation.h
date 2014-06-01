@@ -11,7 +11,7 @@ class Simulation
 {
 public:
   KinematicsModel _model;
-  Poly3Profile _trajectory;
+  Movement _move;
 };
 
 #endif

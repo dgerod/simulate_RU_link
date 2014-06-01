@@ -23,10 +23,10 @@
 #ifndef APP_GLWIDGET_H
 #define APP_GLWIDGET_H
 
-#include <QGLWidget>
 #include <iostream>
-#include <GL/glut.h>   // The GL Utility Toolkit (Glut) Header
-
+#include <QGLWidget>
+#include <QTimer>
+#include <GL/glut.h>
 #include "helpers.h"
 #include "graphics.h"
 #include "simulation.h"
@@ -42,19 +42,24 @@ public:
     QSize minimumSizeHint () const;
     QSize sizeHint () const;
 
-public
-    slots:
+public slots:
     void setXRotation (int Angle);
     void setYRotation (int Angle);
+    void setZRotation (int Angle);
     void setZoom (int Increment);
 
-    void updateInputPose (const QString &);
+    void updatePosInput (const QString& Input);
+    void activeMovement (bool IsActive);
     void moveByJoints ();
     void moveByPose ();
 
-    signals:
+    void changeStatusByJoints ();
+    void executeMoveByJoints ();
+
+signals:
     void xRotationChanged (int Angle);
     void yRotationChanged (int Angle);
+    void zRotationChanged (int Angle);
     void zoomChanged (int Increment);
 
     void writeSolution (const QString &);
@@ -65,38 +70,27 @@ protected:
     void paintGL ();
     void resizeGL (int Width, int Height);
 
-    void keyPressEvent (QKeyEvent* Event);
     void mousePressEvent (QMouseEvent* Event);
     void mouseMoveEvent (QMouseEvent* Event);
-    void wheelEvent (QWheelEvent* Event);
+    void executeMovement ();
 
 private:
-
     void normalizeAngle(int *angle);
     void displayText( const char *fmt, ... );
 
-    QString _inputPose;
-
-    // Scene mangement
+    // Scene management
     // -----------------------------------
 
-    GLuint _base;
+    // Input information
+    QString _inputPose;
+    bool _isMovementActive;
+
+    QTimer* _timer;
 
     // Camera
     float _camPos[3];
-    int _xRot, _yRot, _zoom;
+    int _xRot, _yRot, _zRot, _zoom;
     QPoint _lastPos;
-
-
-    // Scene
-    // Simulation engine
-    // -----------------------------------
-
-    /*
-    gfx::Floor _floor;
-    gfx::RefFrame _origin;
-    gfx::Model _model;
-    */
 
     //
     // -----------------------------------

@@ -3,6 +3,9 @@
 //
 //=============================================================================
 
+#include <iostream>
+#include <QtGlobal>
+#include <QtGui>
 #include "helpers.h"
 
 // ----------------------------------------------------------------------------
@@ -34,7 +37,7 @@ joints_to_QString (KDL::JntArray& Joints, QString& Str)
 
 // ----------------------------------------------------------------------------
 void
-frame_to_opengl (KDL::Frame& Frame, double Pose[6])
+frame_to_opengl (KDL::Frame& Frame, double Pose[])
 {
     double x, y, z;
     double alpha, beta, gamma;
@@ -44,6 +47,33 @@ frame_to_opengl (KDL::Frame& Frame, double Pose[6])
 
     Pose[0] = x; Pose[1] = y; Pose[2] = z;
     Pose[3] = gamma; Pose[4] = beta; Pose[5] = alpha;
-
 }
+
+// ----------------------------------------------------------------------------
+bool
+proc_position_input (QString& Input, int NumElements, double Elements[6])
+{
+    QRegExp rx("[, ]");
+    QStringList list = Input.split(rx, QString::SkipEmptyParts);
+
+    if( list.length() != NumElements )
+    {
+        std::cout << "ERROR: Incorrect input = " << Input.toStdString() << std::endl;
+        return false;
+    }
+
+    for(unsigned int idx=0; idx<list.length(); idx++)
+    {
+        bool validate;
+        Elements[idx] = list[idx].toDouble(&validate);
+
+        if( validate == false )
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 //=============================================================================

@@ -17,5 +17,8 @@ joints_to_QString (KDL::JntArray& Joints, QString& Str);
 void
 frame_to_opengl (KDL::Frame& Frame, double Pose[6]);
 
+bool
+proc_position_input (QString& Input, int NumElements, double Elements[]);
+
 #endif
 //=============================================================================

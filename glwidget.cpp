@@ -22,6 +22,7 @@
 // =============================================================================
 
 #include <math.h>
+#include <QtGlobal>
 #include <QtGui>
 #include <QtDebug>
 #include <QTextStream>
@@ -30,40 +31,42 @@
 #include "helpers.h"
 #include "glwidget.h"
 
-/* Function to build our font list */
-void buildFont ( GLuint* base )
-{
-    /* Storage for 96 characters */
-    *base = glGenLists( 96 );
-}
-
 // -----------------------------------------------------------------------------
 GLWidget::GLWidget (QWidget* Parent)
 	: QGLWidget(Parent)
 {
-    // Storage for 96 characters
-    _base = glGenLists( 96 );
-
     // Camera
     _camPos[0] = 5; _camPos[1] = 5; _camPos[2] = 1;
     _xRot = 0; _yRot = 0; _zoom = 1;
+    // Execute movement
+    _isMovementActive = false;
 
-    // Frame in the origin
-    _gfx._origin.setPosition(0, 0, 0);
+    _timer = new QTimer(this);
+    _timer->setInterval(10);
+    connect(_timer, SIGNAL(timeout()), this, SLOT(executeMovement()));
 
     // Load kinematics model and prepare graphics
-    _sim._model.initialize();
+    _sim._model.initialize(1, 2, 1);
+    _sim._move.initialize(3);
+
+    // Frame in the originexecuteMovement
+    _gfx._origin._length = 10.0;
+    _gfx._origin.setPosition(0, 0, 0);
+    // Represent model
     _gfx._model.initialize( _sim._model );
+    //_sim._model.initialize(10, 20, 5);
 }
 
 // -----------------------------------------------------------------------------
 GLWidget::~GLWidget ()
 {
-    // Recover memory from list of characters
-    glDeleteLists(_base, 96);
+    _timer->stop();
+    delete _timer;
+
     makeCurrent();
 
     _gfx._model.finalize();
+    _sim._move.finalize();
 }
 
 // -----------------------------------------------------------------------------
@@ -115,6 +118,20 @@ GLWidget::setYRotation (int Angle)
         updateGL();
     }
 }
+
+// -----------------------------------------------------------------------------
+ void 
+ GLWidget::setZRotation (int Angle)
+ {
+     normalizeAngle(&Angle);
+     if (Angle != _zRot) 
+     {
+         _zRot = Angle;
+         emit zRotationChanged(Angle);
+         updateGL();
+     }
+ }
+
 // -----------------------------------------------------------------------------
 void
 GLWidget::setZoom (int Increment)
@@ -131,64 +148,70 @@ GLWidget::setZoom (int Increment)
 void
 GLWidget::initializeGL ()
 {
-    glClearColor(0.1, 0.1, 0.1, 0.0);	// sets background color to blue
+    glClearColor(0.1, 0.1, 0.1, 0.0);	// Sets background color to blue
     glClearDepth(1.0);			// Depth Buffer Setup
-    glEnable(GL_DEPTH_TEST); 	//enables hidden-surface removal
+    glEnable(GL_DEPTH_TEST); 	        // Enables hidden-surface removal
 
     //glShadeModel(GL_FLAT);
     //glCullFace(GL_BACK);  //to display back face. We can put also GL_FRONT for front faces
     //glEnable(GL_CULL_FACE);	//enables displaying of both faces of polygons. (enables previous instruction)
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(90.0, 1, 1, 100);
+    //glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    //gluPerspective(90.0, 1, 1, 100);
 }
 
 // -----------------------------------------------------------------------------
 void
 GLWidget::resizeGL (int Width, int Height)
 {
+    int side = qMin(Width, Height);
+    glViewport((Width - side) / 2, (Height - side) / 2, side, side);
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(90.0, Width/Height, 1, 100);
+      
+    glMatrixMode(GL_MODELVIEW);	
+	
+    /*
+    gluPerspective(90.0, Width/Height, 1, 100);
     glViewport(0, 0, Width, Height);
+    */
 }
 
 // -----------------------------------------------------------------------------
 void
 GLWidget::paintGL ()
 {
-    //std::cout << "--- [GLWidget::paintGL] --- " << std::endl;
-
     // Prepare the scene
     // ----------------------------------------------
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// Clear Screen And Depth Buffer with previous values
-    glMatrixMode(GL_MODELVIEW);	// Necessary to perform viewing and model transformations
-    glLoadIdentity();		// Resets the model/view matrix
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     // Set view
     // ----------------------------------------------
 
     gluLookAt(_camPos[0],_camPos[1],_camPos[2],0,0,0,0,0,1);
+
     // Rotate when user changes rotate_x and rotate_y
     glRotated(_xRot / 16.0, 1.0, 0.0, 0.0);
     glRotated(_yRot / 16.0, 0.0, 1.0, 0.0);
+    glRotatef(_zRot / 16.0, 0.0, 0.0, 1.0);
     // Zoom in and out according to mouse wheel movement
     glScalef(_zoom, _zoom, 1.0f);
-
-    // On-screen information
-    // ----------------------------------------------
-
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glRasterPos2f(2.6f, -2.2f);
-    displayText( "Hola" );
 
     // Draw scene
     // ----------------------------------------------
 
-    _gfx._origin.drawIt();
+    // Update model
+    _gfx._model.update(_sim._model, _sim._model._joints);
+
+     // And draw all
     _gfx._floor.drawIt();
+    //_gfx._origin.drawIt();
     _gfx._model.drawIt();
 
     glFinish();
@@ -211,10 +234,12 @@ GLWidget::mouseMoveEvent (QMouseEvent* Event)
     if (Event->buttons() & Qt::LeftButton)
     {
         setXRotation(_xRot + 8 * dy);
+        setYRotation(_yRot + 8 * dx);
     }
-    else if (Event->buttons() & Qt::RightButton)
+	else if (Event->buttons() & Qt::RightButton)
     {
-        setYRotation(_yRot + 8 * dy);
+        setXRotation(_xRot + 8 * dy);
+        setZRotation(_zRot + 8 * dx);
     }
 
     _lastPos = Event->pos();
@@ -222,76 +247,77 @@ GLWidget::mouseMoveEvent (QMouseEvent* Event)
 
 // -----------------------------------------------------------------------------
 void
-GLWidget::wheelEvent (QWheelEvent* Event)
+GLWidget::updatePosInput (const QString& Input)
 {
-    std::cout << "[GLWidget::wheelEvent]" << std::endl;
-
-    QGLWidget::wheelEvent(Event);
-    if (Event->isAccepted())
-      return;
-
-    //distance *= qPow(1.2, -Event->delta() / 120);
-    //float distance = event->delta() / 8.0 / 15.0) * WHEEL_DELTA;
-    //setZoom(distance);
-
-    std::cout << Event->delta() << std::endl;
-
-    Event->accept();
-    update();
+    _inputPose = Input;
 }
 
 // -----------------------------------------------------------------------------
-void GLWidget::keyPressEvent (QKeyEvent* Event)
-{
-  std::cout << "[GLWidget::keyPressEvent]" << std::endl;
-
-  if(Event->key() == Qt::Key_A)
-  {
-  }
-  else if(Event->key() == Qt::Key_Z)
-  {
-  }
-  else
-  {
-      QWidget::keyPressEvent(Event);
-  }
-}
-
-// -----------------------------------------------------------------------------
-
 void
-GLWidget::displayText( const char *fmt, ... )
+GLWidget::activeMovement (bool IsActive)
 {
-    char text[256]; /* Holds our string */
-    va_list ap;     /* Pointer to our list of elements */
-
-    /* If there's no text, do nothing */
-    if ( fmt == NULL )
-        return;
-
-    /* Parses The String For Variables */
-    va_start( ap, fmt );
-    vsprintf( text, fmt, ap );
-    va_end( ap );
-
-    /* Pushes the Display List Bits */
-    glPushAttrib( GL_LIST_BIT );
-
-    /* Sets base character to 32 */
-    glListBase( _base - 32 );
-
-    /* Draws the text */
-    glCallLists( strlen( text ), GL_UNSIGNED_BYTE, text );
-
-    /* Pops the Display List Bits */
-    glPopAttrib();
+    _isMovementActive = IsActive;
 }
 
 // -----------------------------------------------------------------------------
 void
 GLWidget::moveByJoints ()
 {
-    std::cout << "[GLWidget::moveByJoints]" << std::endl;
+    if( _isMovementActive == false )
+    {
+        emit changeStatusByJoints();
+    }
+    else
+    {
+        emit executeMoveByJoints();
+    }
+}
+
+// -----------------------------------------------------------------------------
+void
+GLWidget::executeMoveByJoints ()
+{
+   std::cout << "[GLWidget::executeMoveByJoints] begin" << std::endl;
+
+   QString msg;
+   int numJoints;
+   double inputs[3];
+
+   numJoints = _sim._model._chain.getNrOfJoints();
+
+   // Validate input and prepare joints
+   // ----------------------------------------------------
+
+   if( proc_position_input(_inputPose, numJoints, inputs) == false)
+   {
+       emit showMessage("ERROR - Incorrect input for DK");
+       return;
+   }
+
+   KDL::JntArray qf(numJoints);
+   KDL::Frame frame;
+
+   for(unsigned int jdx=0; jdx<numJoints; jdx++)
+     {  qf(jdx) = inputs[jdx]; }
+
+   printf("qf(0) = %f, qf(1) = %f, qf(2) = %f\n", qf(0), qf(1), qf(2));
+
+   // Prepare trajectory
+   double Tt = 10;
+   _sim._move.start(_sim._model._joints, qf, 10);
+   // Activate time
+   _timer->start();
+
+   //update();
+
+   std::cout << "[GLWidget::executeMoveByJoints] end" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+void
+GLWidget::changeStatusByJoints ()
+{
+    std::cout << "[GLWidget::changeStatusByJoints] begin" << std::endl;
 
     QString msg;
     int nj = _sim._model._chain.getNrOfJoints();
@@ -327,29 +353,13 @@ GLWidget::moveByJoints ()
 
     //
     // ----------------------------------------------------
-    /*
-    // Get current positon
-    // IK of target position
-    // Interpolate
-    _sim.model.getJoints(qi);
-    _sim._model.cartToJnts(pose, qf);
-    list = _sim._movement.intp(qi, qf);
-
-    // DK of all position
-    foreach( list )xRotationChanged
-    {
-      qk <-- list
-      _sim._model.jntsToCart(qk, pose);
-      _model.update(pose);
-    }
-    */
 
     if( _sim._model.jntsToCart(q, frame) == true)
     {
         _sim._model._joints = q;
         _sim._model._tcs0 = frame;
 
-        _gfx._model.update(_sim._model, _sim._model._joints);
+        //_gfx._model.update(_sim._model, _sim._model._joints);
 
         printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
         std::cout << frame << std::endl;
@@ -360,11 +370,13 @@ GLWidget::moveByJoints ()
     }
     else
     {
-        emit writeSolution(msg);
+        emit writeSolution("");
         emit showMessage("ERROR - No solution");
     }
 
     update();
+
+    std::cout << "[GLWidget::changeStatusByJoints] end" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -415,7 +427,7 @@ GLWidget::moveByPose ()
         _sim._model._tcs0 = frame;
         _sim._model._joints = q;
 
-        _gfx._model.update(_sim._model, _sim._model._joints);
+        //_gfx._model.update(_sim._model, _sim._model._joints);
 
         std::cout << frame << std::endl;
         printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
@@ -426,7 +438,7 @@ GLWidget::moveByPose ()
     }
     else
     {
-        emit writeSolution(msg);
+        emit writeSolution("");
         emit showMessage("ERROR - No solution");
     }
 
@@ -435,9 +447,43 @@ GLWidget::moveByPose ()
 
 // -----------------------------------------------------------------------------
 void
-GLWidget::updateInputPose (const QString & Input)
+GLWidget::executeMovement ()
 {
-    _inputPose = Input;
+  std::cout << "[GLWidget::executeMovement] begin" << std::endl;
+
+  KDL::JntArray q(_sim._model._joints);
+  KDL::Frame frame;
+
+  _sim._move.nextPosition(_sim._move._Tk + 1.0, q);
+
+  if( _sim._model.jntsToCart(q, frame) == true)
+  {
+      _sim._model._joints = q;
+      _sim._model._tcs0 = frame;
+
+      printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
+      std::cout << frame << std::endl;
+
+      // Check if trajectory is finished
+      if( _sim._move._Tk >= _sim._move._Tt)
+      {
+          _timer->stop();
+      }
+
+      QString msg;
+      frame_to_QString(frame, msg);
+      emit writeSolution(msg);
+      emit showMessage("OK");
+  }
+  else
+  {
+      _timer->stop();
+      emit showMessage("ERROR - Movement aborted.");
+  }
+
+  updateGL();
+
+  std::cout << "[GLWidget::executeMovement] end" << std::endl;
 }
 
 // =============================================================================

@@ -1,8 +1,8 @@
 // =============================================================================
 //
 // =============================================================================
-#ifndef MODEL_POLY3TRAJECTORY_H
-#define MODEL_POLY3TRAJECTORY_H
+#ifndef MODEL_POLY3PROFILE_H
+#define MODEL_POLY3PROFILE_H
 
 class Poly3Profile
 {
@@ -19,7 +19,7 @@ public:
 private:
 
     bool calcCoeficients (const Data* Initial, const Data* Final,
-                                     const double TimeNs);
+                             const double TimeNs);
 
     struct Coeficients
     {

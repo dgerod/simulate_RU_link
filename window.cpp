@@ -36,11 +36,11 @@
 qtWindow::qtWindow()
 {
     glWidget = new GLWidget;
-    click = new QTimer(this);
 
     txInputInfo = new QLineEdit("0.0, 0.0, 0.0");
     btDkMove = new QPushButton("Joints");
     btIkMove = new QPushButton("Pose");
+    rbDoMovement = new QRadioButton("Execute movement");
     txSolutionInfo = new QLineEdit("");
     txSolutionInfo->setReadOnly(true);
     txSolutionInfo->setStyleSheet( QString("background-color: beige") );
@@ -48,8 +48,28 @@ qtWindow::qtWindow()
     txInfoMsg->setReadOnly(true);
     txInfoMsg->setStyleSheet( QString("color: blue; background: beige") );
 
-    xSlider = createSlider();
+    connect(txInputInfo, SIGNAL(textChanged(const QString &)), glWidget, SLOT(updatePosInput(const QString &)));
+    connect(btIkMove, SIGNAL(clicked()), glWidget, SLOT(moveByPose()));
+    connect(btDkMove, SIGNAL(clicked()), glWidget, SLOT(moveByJoints()));
+    connect(rbDoMovement, SIGNAL(toggled(bool)), glWidget, SLOT(activeMovement(bool)) );
+    connect(glWidget, SIGNAL(writeSolution(const QString &)), txSolutionInfo, SLOT(setText(const QString &)));
+    connect(glWidget, SIGNAL(showMessage(const QString &)), txInfoMsg, SLOT(setText(const QString &)));
 
+    xSlider = createSlider();
+    ySlider = createSlider();
+    zSlider = createSlider();
+
+    xSlider->setValue(15 * 16);
+    ySlider->setValue(345 * 16);
+    zSlider->setValue(0 * 16);
+
+    connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
+    connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
+    connect(ySlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setYRotation(int)));
+    connect(glWidget, SIGNAL(yRotationChanged(int)), ySlider, SLOT(setValue(int)));
+    connect(zSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setZRotation(int)));
+    connect(glWidget, SIGNAL(zRotationChanged(int)), zSlider, SLOT(setValue(int)));
+   
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* layout2 = new QHBoxLayout;
     QGridLayout* layout3 = new QGridLayout;
@@ -58,31 +78,21 @@ qtWindow::qtWindow()
     mainLayout->addWidget(txInfoMsg);
 
     layout2->addWidget(glWidget);
-    layout2->addLayout(layout3);
     layout2->addWidget(xSlider);
+    layout2->addWidget(ySlider);
+    layout2->addWidget(zSlider);
+    layout2->addLayout(layout3);
 
     layout3->addWidget(txInputInfo);
     layout3->addWidget(btDkMove);
     layout3->addWidget(btIkMove);
+    layout3->addWidget(rbDoMovement);
     layout3->addWidget(txSolutionInfo);
 
     setLayout(mainLayout);
 
-    connect(txInputInfo, SIGNAL(textChanged(const QString &)), glWidget, SLOT(updateInputPose(const QString &)));
-    connect(btIkMove, SIGNAL(clicked()), glWidget, SLOT(moveByPose()));
-    connect(btDkMove, SIGNAL(clicked()), glWidget, SLOT(moveByJoints()));
-    connect(click, SIGNAL(timeout()), glWidget, SLOT(updateGL()));
-    connect(glWidget, SIGNAL(writeSolution(const QString &)), txSolutionInfo, SLOT(setText(const QString &)));
-    connect(glWidget, SIGNAL(showMessage(const QString &)), txInfoMsg, SLOT(setText(const QString &)));
-
-    //xSlider->hide();
-
-    //QDesktopWidget dw;
-    //QRect screenSize = dw.availableGeometry(this);
-    //setFixedSize(screenSize.width() * 0.7f, screenSize.height() * 0.7f);
-
     setWindowTitle(tr("Simulate RU link"));
-    click->start(1000);
+    //click->start(1000);
 }
 
 // -----------------------------------------------------------------------------
@@ -95,6 +105,15 @@ QSlider *qtWindow::createSlider ()
     slider->setTickInterval(15 * 16);
     slider->setTickPosition(QSlider::TicksRight);
     return slider;
+}
+
+// -----------------------------------------------------------------------------
+void qtWindow::keyPressEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Escape)
+    	{ close(); }
+    else
+        { QWidget::keyPressEvent(e); }
 }
 
 // =============================================================================

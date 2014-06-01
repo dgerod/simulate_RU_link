@@ -32,11 +32,7 @@ Model::initialize (const KinematicsModel& Model)
         double q = 0.0;
         frame = frame * Model._chain.getSegment(ldx).pose( q );
 
-        //pose[0] = frame.p[0]; pose[1] = frame.p[1]; pose[2] = frame.p[2];
-        //frame.M.GetEulerZYX(pose[5], pose[4], pose[3]);
-
         frame_to_opengl(frame, pose);
-
         _objects.push_back(new RefFrame());
         _objects.back()->setPose(pose);
     }
@@ -60,28 +56,31 @@ Model::finalize ()
 void
 Model::update (const KinematicsModel& Model, const KDL::JntArray& Joints)
 {
-    //std::cout << "[Model::update] begin" << std::endl;
-
     double pose[6];
     KDL::Frame frame;
+
+    double q[5];
+
+    q[0] = 0.0;
+    q[1] = Joints(0);
+    q[2] = Joints(1);
+    q[3] = Joints(2);
+    q[4] = 0.0;
 
     unsigned int nl = Model._chain.getNrOfSegments();
     for( unsigned int ldx=0; ldx<nl; ldx++)
     {
-        double q = Joints(ldx);
-        frame = frame * Model._chain.getSegment(ldx).pose( q );
-
-        //pose[0] = frame.p[0]; pose[1] = frame.p[1]; pose[2] = frame.p[2];
-        //frame.M.GetEulerZYX(pose[5], pose[4], pose[3]);
+        double qi = q[ldx];
+        std::cout << qi << std::endl;
+        frame = frame * Model._chain.getSegment(ldx).pose( qi );
 
         frame_to_opengl(frame, pose);
+        _objects[ldx]->setPose(pose);
 
-        _objects.back()->setPose(pose);
+        printf("p(0) = %f, p(1) = %f, p(2) = %f, p(3) = %f, p(4) = %f, p(5) = %f\n",
+                pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
     }
-
-    //std::cout << "[Model::initialize] end" << std::endl;
 }
-
 
 // -----------------------------------------------------------------------------
 void
@@ -90,14 +89,15 @@ Model::drawIt ()
     std::cout << "[Model::drawIt] start" << std::endl;
     std::cout << "Num frames: " <<  _objects.size() << std::endl;
 
+    // Draw reference frames
+
     for(ObjectList::iterator it = _objects.begin(); it != _objects.end(); ++it)
     {
         (*it)->drawIt();glPopMatrix ();
     }
 
-    // ------------------------------
-
     // Draw cylinder
+
     glPushMatrix ();
     glTranslatef (-2, -2, 0);
 
@@ -106,13 +106,12 @@ Model::drawIt ()
     glPopMatrix ();
 
     // Draw sphere
+
     glPushMatrix ();
     glTranslatef (-2, 2, 0);
 
     gluSphere(gluNewQuadric(), 0.5, 10, 25);
     glPopMatrix ();
-
-    //std::cout << "[Model::drawIt] end" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

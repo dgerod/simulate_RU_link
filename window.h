@@ -40,6 +40,9 @@ Q_OBJECT
 public:
     qtWindow();
 
+ protected:
+     void keyPressEvent(QKeyEvent *event);
+
 private:
     QSlider *createSlider();
 
@@ -49,11 +52,13 @@ private:
     QLineEdit* txInputInfo;
     QPushButton* btDkMove;
     QPushButton* btIkMove;
+    QRadioButton* rbDoMovement;
     QLineEdit* txSolutionInfo;
     QLineEdit* txInfoMsg;
 
     QSlider* xSlider;
-    QPushButton* button;
+    QSlider* ySlider;
+    QSlider* zSlider;
 };
 
 #endif

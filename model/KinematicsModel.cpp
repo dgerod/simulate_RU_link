@@ -19,7 +19,7 @@ KinematicsModel::KinematicsModel ()
 
 // -----------------------------------------------------------------------------
 bool
-KinematicsModel::initialize ()
+KinematicsModel::initialize (double L1, double L2, double L3)
 {
     std::cout << "[KinematicsModel::initialize] begin" << std::endl;
 
@@ -29,13 +29,13 @@ KinematicsModel::initialize ()
     // DH parameters: [a, alpha, d, theta]
 
     // Origin
-    _chain.addSegment( Segment( Joint(Joint::None),Frame::DH(1/*10*/, 0, 0, 0) ));
+    _chain.addSegment( Segment( Joint(Joint::None),Frame::DH(L1, 0, 0, 0) ));
     // Revolution joint (1 dof)
-    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(2/*20*/, 0, 0, 0) ));
+    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(L2, 0, 0, 0) ));
     /// Universal joint (2 dof)
     _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(0, 0, 0, 0) ));
-    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(0, -M_PI/2, 0, 0) ));
-    _chain.addSegment( Segment( Joint(Joint::None),Frame::DH(1, M_PI/2, 0, 0) ));
+    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(0, M_PI/2, 0, 0) ));
+    _chain.addSegment( Segment( Joint(Joint::None),Frame::DH(L3, -M_PI/2, 0, 0) ));
 
     std::cout << "num joints " << _chain.getNrOfJoints() << std::endl;
 
