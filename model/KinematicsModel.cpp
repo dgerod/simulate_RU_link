@@ -72,6 +72,19 @@ KinematicsModel::cartTojnts (const KDL::Frame& Pose, KDL::JntArray& Joints)
     ChainIkSolverPos_LMA ikSolver(_chain);
     if( ikSolver.CartToJnt(_joints, Pose, Joints) >= 0 )
     {
+        for(unsigned int jdx=0; jdx< Joints.rows(); jdx++)
+        {
+            if( Joints(jdx) > M_PI )
+            {
+                while( Joints(jdx) > M_PI )
+                  { Joints(jdx) = Joints(jdx) - 2*M_PI; }
+            }
+            else if( Joints(jdx) < -M_PI )
+            {
+                Joints(jdx) = Joints(jdx) + 2*M_PI;
+            }
+        }
+
         Success = true;
     }
 
