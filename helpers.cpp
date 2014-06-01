@@ -22,6 +22,18 @@ frame_to_QString (KDL::Frame& Frame, QString& Str)
 
 // ----------------------------------------------------------------------------
 void
+joints_to_QString (KDL::JntArray& Joints, QString& Str)
+{
+    double j1, j2, j3;
+
+    j1 = Joints(0); j2 = Joints(1); j3 = Joints(2);
+
+    Str = QString("[%1, %2, %3,]")
+             .arg(QString::number(j1),QString::number(j2),QString::number(j3));
+}
+
+// ----------------------------------------------------------------------------
+void
 frame_to_opengl (KDL::Frame& Frame, double Pose[6])
 {
     double x, y, z;

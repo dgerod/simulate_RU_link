@@ -43,8 +43,10 @@ qtWindow::qtWindow()
     btIkMove = new QPushButton("Pose");
     txSolutionInfo = new QLineEdit("");
     txSolutionInfo->setReadOnly(true);
+    txSolutionInfo->setStyleSheet( QString("background-color: beige") );
     txInfoMsg = new QLineEdit("OK");
     txInfoMsg->setReadOnly(true);
+    txInfoMsg->setStyleSheet( QString("color: blue; background: beige") );
 
     xSlider = createSlider();
 
