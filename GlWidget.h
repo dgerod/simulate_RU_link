@@ -82,7 +82,7 @@ private:
     // -----------------------------------
 
     // Input information
-    QString _inputPose;
+    QString _inputPos;
     bool _isMovementActive;
 
     QTimer* _timer;
@@ -92,7 +92,7 @@ private:
     int _xRot, _yRot, _zRot, _zoom;
     QPoint _lastPos;
 
-    //
+    // Graphics/simulation of the model
     // -----------------------------------
 
     Graphics _gfx;

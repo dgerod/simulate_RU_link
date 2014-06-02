@@ -35,25 +35,25 @@ GLWidget::GLWidget (QWidget* Parent)
 	: QGLWidget(Parent)
 {
     // Camera
-    _camPos[0] = 5; _camPos[1] = 5; _camPos[2] = 1;
-    _xRot = 0; _yRot = 0; _zoom = 1;
-    // Execute movement
-    _isMovementActive = false;
+    _camPos[0] = 5; _camPos[1] = 5; _camPos[2] = 2;
+    _xRot = 0; _yRot = 0; _zRot = 0; _zoom = 1;
 
+    // Execute movement based on joints
+    _isMovementActive = false;
     _timer = new QTimer(this);
     _timer->setInterval(500);
     QObject::connect(_timer, SIGNAL(timeout()), this, SLOT(executeMovement()));
 
     // Load kinematics model and prepare graphics
     _sim._model.initialize(1, 2, 1);
-    _sim._move.initialize(3);
+    //_sim._model.initialize(10, 20, 5);
+    _sim._move.initialize( _sim._model );
 
     // Frame in the originexecuteMovement
     _gfx._origin._length = 10.0;
     _gfx._origin.setPosition(0, 0, 0);
     // Represent model
     _gfx._model.initialize( _sim._model );
-    //_sim._model.initialize(10, 20, 5);
 }
 
 // -----------------------------------------------------------------------------
@@ -195,11 +195,11 @@ GLWidget::paintGL ()
 
     gluLookAt(_camPos[0],_camPos[1],_camPos[2],0,0,0,0,0,1);
 
-    // Rotate when user changes rotate_x and rotate_y
+    // Rotate in x, y, z
     glRotated(_xRot / 16.0, 1.0, 0.0, 0.0);
     glRotated(_yRot / 16.0, 0.0, 1.0, 0.0);
     glRotatef(_zRot / 16.0, 0.0, 0.0, 1.0);
-    // Zoom in and out according to mouse wheel movement
+    // Zoom in/out
     glScalef(_zoom, _zoom, 1.0f);
 
     // Draw scene
@@ -248,7 +248,7 @@ GLWidget::mouseMoveEvent (QMouseEvent* Event)
 void
 GLWidget::updatePosInput (const QString& Input)
 {
-    _inputPose = Input;
+    _inputPos = Input;
 }
 
 // -----------------------------------------------------------------------------
@@ -276,7 +276,7 @@ GLWidget::moveByJoints ()
 void
 GLWidget::executeMoveByJoints ()
 {
-   std::cout << "[GLWidget::executeMoveByJoints] begin" << std::endl;
+   qDebug("[GLWidget::executeMoveByJoints] start" );
 
    QString msg;
    int numJoints;
@@ -287,7 +287,7 @@ GLWidget::executeMoveByJoints ()
    // Validate input and prepare joints
    // ----------------------------------------------------
 
-   if( proc_position_input(_inputPose, numJoints, inputs) == false)
+   if( proc_position_input(_inputPos, numJoints, inputs) == false)
    {
        emit showMessage("ERROR - Incorrect input for DK");
        return;
@@ -307,16 +307,14 @@ GLWidget::executeMoveByJoints ()
    // Activate time
    _timer->start();
 
-   //update();
-
-   std::cout << "[GLWidget::executeMoveByJoints] end" << std::endl;
+   qDebug( "[GLWidget::executeMoveByJoints] end" );
 }
 
 // -----------------------------------------------------------------------------
 void
 GLWidget::changeStatusByJoints ()
 {
-    std::cout << "[GLWidget::changeStatusByJoints] begin" << std::endl;
+    qDebug( "[GLWidget::changeStatusByJoints] start" );
 
     QString msg;
     int nj = _sim._model._chain.getNrOfJoints();
@@ -327,11 +325,11 @@ GLWidget::changeStatusByJoints ()
     // ----------------------------------------------------
 
     QRegExp rx("[, ]");
-    QStringList list = _inputPose.split(rx, QString::SkipEmptyParts);
+    QStringList list = _inputPos.split(rx, QString::SkipEmptyParts);
 
     if( list.length() != nj )
     {
-        std::cout << "ERROR: Incorrect input = " << _inputPose.toStdString() << std::endl;
+        std::cout << "ERROR: Incorrect input = " << _inputPos.toStdString() << std::endl;
         emit showMessage("ERROR - Incorrect input for DK");
         return;
     }
@@ -375,7 +373,7 @@ GLWidget::changeStatusByJoints ()
 
     update();
 
-    std::cout << "[GLWidget::changeStatusByJoints] end" << std::endl;
+    qDebug( "[GLWidget::changeStatusByJoints] end" );
 }
 
 // -----------------------------------------------------------------------------
@@ -392,11 +390,11 @@ GLWidget::moveByPose ()
 
     double pose[6];
     QRegExp rx("[, ]");
-    QStringList list = _inputPose.split(rx, QString::SkipEmptyParts);
+    QStringList list = _inputPos.split(rx, QString::SkipEmptyParts);
 
     if( list.length() != 6 )
     {
-        std::cout << "ERROR: Incorrect input = " << _inputPose.toStdString() << std::endl;
+        std::cout << "ERROR: Incorrect input = " << _inputPos.toStdString() << std::endl;
         emit showMessage("ERROR - Incorrect input for IK.");
         return;
     }
@@ -448,12 +446,12 @@ GLWidget::moveByPose ()
 void
 GLWidget::executeMovement ()
 {
-  std::cout << "[GLWidget::executeMovement] begin" << std::endl;
+  qDebug( "[GLWidget::executeMovement] start" );
 
   KDL::JntArray q(_sim._model._joints);
   KDL::Frame frame;
 
-  if( _sim._move.nextPosition(_sim._move._Tk + 1.0, q) == false )
+  if( _sim._move.nextPosition(_sim._move.Tk() + 1.0, q) == false )
   {
       _timer->stop();
   }
@@ -477,9 +475,9 @@ GLWidget::executeMovement ()
       emit showMessage("ERROR - Movement aborted.");
   }
 
-  updateGL();
+  update();
 
-  std::cout << "[GLWidget::executeMovement] end" << std::endl;
+  qDebug( "[GLWidget::executeMovement] end" );
 }
 
 // =============================================================================

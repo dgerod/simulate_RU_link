@@ -10,8 +10,9 @@
 class Simulation
 {
 public:
-  KinematicsModel _model;
-  Movement _move;
+
+    KinematicsModel _model;
+    Movement _move;
 };
 
 #endif

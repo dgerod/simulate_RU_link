@@ -38,16 +38,19 @@ class qtWindow : public QWidget
 Q_OBJECT
 
 public:
-    qtWindow();
+    qtWindow ();
 
- protected:
-     void keyPressEvent(QKeyEvent *event);
+protected:
+     void keyPressEvent (QKeyEvent *Event);
 
 private:
-    QSlider *createSlider();
+    QSlider* createSlider();
 
     GLWidget* glWidget;
-    QTimer* click;
+
+    QSlider* xSlider;
+    QSlider* ySlider;
+    QSlider* zSlider;
 
     QLineEdit* txInputInfo;
     QPushButton* btDkMove;
@@ -55,10 +58,6 @@ private:
     QRadioButton* rbDoMovement;
     QLineEdit* txSolutionInfo;
     QLineEdit* txInfoMsg;
-
-    QSlider* xSlider;
-    QSlider* ySlider;
-    QSlider* zSlider;
 };
 
 #endif
