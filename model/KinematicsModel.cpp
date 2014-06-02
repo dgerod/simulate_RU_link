@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <math.h>
+#include <QDebug>
 #include <kdl/chainfksolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainiksolverpos_lma.hpp>
@@ -21,24 +22,10 @@ KinematicsModel::KinematicsModel ()
 bool
 KinematicsModel::initialize (double L1, double L2, double L3)
 {
-    std::cout << "[KinematicsModel::initialize] begin" << std::endl;
-
+    qDebug( "[KinematicsModel::initialize] start" );
     bool Success = false;
 
-
-    /*
-    // Create the kinematics model of RU link
-    // DH parameters: [a, alpha, d, theta]
-
-    // Origin
-    _chain.addSegment( Segment( Joint(Joint::None),Frame::DH(L1, 0, 0, 0) ));
-    // Revolution joint (1 dof)
-    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(L2, 0, 0, 0) ));
-    /// Universal joint (2 dof)
-    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(0, 0, 0, 0) ));
-    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame::DH(0, M_PI/2, 0, 0) ));
-    _chain.addSegment( Segment( Joint(Joint::None),Frame::DH(L3, -M_PI/2, 0, 0) ));
-    */
+    // Define chain
 
     // Origin
     _chain.addSegment( Segment( Joint(Joint::None),Frame(Vector(L1, 0, 0)) ));
@@ -47,16 +34,15 @@ KinematicsModel::initialize (double L1, double L2, double L3)
     /// Universal joint (2 dof)
     _chain.addSegment( Segment( Joint(Joint::RotZ),Frame(Vector(0, 0, 0)) ));
     _chain.addSegment( Segment( Joint(Joint::RotY),Frame(Vector(0, 0, 0)) ));
+    // Tool
     _chain.addSegment( Segment( Joint(Joint::None),Frame(Vector(L3, 0, 0)) ));
-
-    std::cout << "num joints " << _chain.getNrOfJoints() << std::endl;
 
     // Initialize joints to zero
 
     _joints.resize(_chain.getNrOfJoints());
     KDL::SetToZero(_joints);
 
-    std::cout << "[KinematicsModel::initialize] end" << std::endl;
+    qDebug( "[KinematicsModel::initialize] end" );
     return Success;
 }
 
@@ -64,6 +50,7 @@ KinematicsModel::initialize (double L1, double L2, double L3)
 bool
 KinematicsModel::jntsToCart (const KDL::JntArray& Joints, KDL::Frame& Pose)
 {
+    qDebug( "[KinematicsModel::jntsToCart] start" );
     bool Success = false;
 
     ChainFkSolverPos_recursive fkSolver(_chain);
@@ -72,6 +59,7 @@ KinematicsModel::jntsToCart (const KDL::JntArray& Joints, KDL::Frame& Pose)
         Success = true;
     }
 
+    qDebug( "[KinematicsModel::jntsToCart] end" );
     return Success;
 }
 
@@ -79,6 +67,7 @@ KinematicsModel::jntsToCart (const KDL::JntArray& Joints, KDL::Frame& Pose)
 bool
 KinematicsModel::cartTojnts (const KDL::Frame& Pose, KDL::JntArray& Joints)
 {
+    qDebug( "[KinematicsModel::cartTojnts] start" );
     bool Success = false;
 
     ChainIkSolverPos_LMA ikSolver(_chain);
@@ -100,6 +89,7 @@ KinematicsModel::cartTojnts (const KDL::Frame& Pose, KDL::JntArray& Joints)
         Success = true;
     }
 
+    qDebug( "[KinematicsModel::cartTojnts] end" );
     return Success;
 }
 

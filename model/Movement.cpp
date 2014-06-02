@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <iostream>
 #include <math.h>
+#include <QDebug>
 #include <kdl/jntarray.hpp>
 #include "Movement.h"
 
@@ -21,10 +22,10 @@ Movement::Movement ()
 
 // -----------------------------------------------------------------------------
 void
-Movement::initialize (unsigned int NumJoints)
+Movement::initialize (const KinematicsModel& KinemModel)
 {
     _profiles.clear();
-    _numJoints = NumJoints;
+    _numJoints = KinemModel._chain.getNrOfJoints();
 
     for(unsigned int jdx=0; jdx<_numJoints; jdx++)
     {
@@ -48,7 +49,7 @@ Movement::finalize ()
 bool
 Movement::start (KDL::JntArray& Qi, KDL::JntArray& Qf, double Tt)
 {
-    std::cout << "[Movement::start] begin" << std::endl;
+    qDebug( "[Movement::start] start" );
     bool Success = true;
 
     _Tk = 0;
@@ -64,7 +65,7 @@ Movement::start (KDL::JntArray& Qi, KDL::JntArray& Qf, double Tt)
         _profiles[jdx]->initialize(init, final, Tt);
     }
 
-    std::cout << "[Movement::start] end" << std::endl;
+    qDebug( "[Movement::start] end" );
     return Success;
 }
 
@@ -72,7 +73,7 @@ Movement::start (KDL::JntArray& Qi, KDL::JntArray& Qf, double Tt)
 bool
 Movement::nextPosition (double Tk, KDL::JntArray& Qk)
 {
-    std::cout << "[Movement::nextPosition] end" << std::endl;
+    qDebug( "[Movement::nextPosition] start" );
     bool IsOngoing = true;
     double pos;
 
@@ -90,7 +91,7 @@ Movement::nextPosition (double Tk, KDL::JntArray& Qk)
         IsOngoing = false;
     }
 
-    std::cout << "[Movement::nextPosition] end" << std::endl;
+    qDebug( "[Movement::nextPosition] end" );
     return IsOngoing;
 }
 
