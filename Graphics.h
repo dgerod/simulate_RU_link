@@ -12,9 +12,10 @@ using namespace gfxl;
 class Graphics
 {
 public:
-  RefFrame _origin;
-  Floor _floor;
-  Model _model;
+
+    Floor _floor;
+    RefFrame _origin;
+    Model _model;
 };
 
 #endif
