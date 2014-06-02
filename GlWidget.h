@@ -28,8 +28,8 @@
 #include <QTimer>
 #include <GL/glut.h>
 #include "helpers.h"
-#include "graphics.h"
-#include "simulation.h"
+#include "Graphics.h"
+#include "Simulation.h"
 
 class GLWidget : public QGLWidget
 {
@@ -55,6 +55,7 @@ public slots:
 
     void changeStatusByJoints ();
     void executeMoveByJoints ();
+    void executeMovement ();
 
 signals:
     void xRotationChanged (int Angle);
@@ -72,7 +73,6 @@ protected:
 
     void mousePressEvent (QMouseEvent* Event);
     void mouseMoveEvent (QMouseEvent* Event);
-    void executeMovement ();
 
 private:
     void normalizeAngle(int *angle);

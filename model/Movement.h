@@ -26,6 +26,8 @@ public:
     unsigned int _numJoints;
     typedef std::vector<Poly3Profile*> tProfileList;
     tProfileList _profiles;
+
+
 };
 
 #endif

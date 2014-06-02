@@ -14,10 +14,10 @@ SET( QT_USE_QTOPENGL TRUE )
 INCLUDE(${QT_USE_FILE})
 
 # MOC_HDRS set to all files with Q_OBJECT in it
-SET(MOC_HDRS  glwidget.h  window.h)
+SET(MOC_HDRS  GlWidget.h  QtWindow.h)
 
 # Regular cpp sources
-SET(CPP_SRCS  window.cpp glwidget.cpp simulation.cpp graphics.cpp helpers.cpp gfxl/base.cpp gfxl/model.cpp  
+SET(CPP_SRCS  QtWindow.cpp GlWidget.cpp Simulation.cpp Graphics.cpp helpers.cpp gfxl/Base.cpp gfxl/Model.cpp  
               model/KinematicsModel.cpp model/Movement.cpp model/Poly3Profile.cpp)
 
 # Run moc on header files with Q_OBJECT

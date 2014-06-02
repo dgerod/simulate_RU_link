@@ -5,7 +5,7 @@
 #include <math.h>
 #include <GL/glut.h>
 #include "common.h"
-#include "base.h"
+#include "Base.h"
 
 // -----------------------------------------------------------------------------
 namespace gfxl {

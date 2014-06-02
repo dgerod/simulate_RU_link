@@ -7,8 +7,8 @@
 #include <iostream>
 #include <vector>
 #include <kdl/frames.hpp>
-#include "base.h"
-#include "../simulation.h"
+#include "Base.h"
+#include "../Simulation.h"
 
 namespace gfxl {
 

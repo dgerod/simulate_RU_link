@@ -23,7 +23,7 @@
  #include <QApplication>
  #include <QDesktopWidget>
 
- #include "window.h"
+ #include "QtWindow.h"
 
 int main (int argc, char *argv[])
 {

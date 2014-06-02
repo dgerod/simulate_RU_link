@@ -6,7 +6,7 @@
 #include <GL/glut.h>
 #include "../helpers.h"
 #include "common.h"
-#include "model.h"
+#include "Model.h"
 
 // -----------------------------------------------------------------------------
 namespace gfxl {

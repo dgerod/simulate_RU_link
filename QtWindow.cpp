@@ -21,16 +21,15 @@
 //
 // =============================================================================
 
+#include <stdio.h>
+#include <iostream>
 #include <QDesktopWidget>
 #include <QMainWindow>
-#include "window.h"
-
 #include <kdl/chain.hpp>
 #include <kdl/chainfksolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames_io.hpp>
-#include <stdio.h>
-#include <iostream>
+#include "QtWindow.h"
 
 // -----------------------------------------------------------------------------
 qtWindow::qtWindow()
@@ -48,12 +47,12 @@ qtWindow::qtWindow()
     txInfoMsg->setReadOnly(true);
     txInfoMsg->setStyleSheet( QString("color: blue; background: beige") );
 
-    connect(txInputInfo, SIGNAL(textChanged(const QString &)), glWidget, SLOT(updatePosInput(const QString &)));
-    connect(btIkMove, SIGNAL(clicked()), glWidget, SLOT(moveByPose()));
-    connect(btDkMove, SIGNAL(clicked()), glWidget, SLOT(moveByJoints()));
-    connect(rbDoMovement, SIGNAL(toggled(bool)), glWidget, SLOT(activeMovement(bool)) );
-    connect(glWidget, SIGNAL(writeSolution(const QString &)), txSolutionInfo, SLOT(setText(const QString &)));
-    connect(glWidget, SIGNAL(showMessage(const QString &)), txInfoMsg, SLOT(setText(const QString &)));
+    QObject::connect(txInputInfo, SIGNAL(textChanged(const QString &)), glWidget, SLOT(updatePosInput(const QString &)));
+    QObject::connect(btIkMove, SIGNAL(clicked()), glWidget, SLOT(moveByPose()));
+    QObject::connect(btDkMove, SIGNAL(clicked()), glWidget, SLOT(moveByJoints()));
+    QObject::connect(rbDoMovement, SIGNAL(toggled(bool)), glWidget, SLOT(activeMovement(bool)) );
+    QObject::connect(glWidget, SIGNAL(writeSolution(const QString &)), txSolutionInfo, SLOT(setText(const QString &)));
+    QObject::connect(glWidget, SIGNAL(showMessage(const QString &)), txInfoMsg, SLOT(setText(const QString &)));
 
     xSlider = createSlider();
     ySlider = createSlider();
@@ -63,12 +62,12 @@ qtWindow::qtWindow()
     ySlider->setValue(345 * 16);
     zSlider->setValue(0 * 16);
 
-    connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
-    connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
-    connect(ySlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setYRotation(int)));
-    connect(glWidget, SIGNAL(yRotationChanged(int)), ySlider, SLOT(setValue(int)));
-    connect(zSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setZRotation(int)));
-    connect(glWidget, SIGNAL(zRotationChanged(int)), zSlider, SLOT(setValue(int)));
+    QObject::connect(xSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setXRotation(int)));
+    QObject::connect(glWidget, SIGNAL(xRotationChanged(int)), xSlider, SLOT(setValue(int)));
+    QObject::connect(ySlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setYRotation(int)));
+    QObject::connect(glWidget, SIGNAL(yRotationChanged(int)), ySlider, SLOT(setValue(int)));
+    QObject::connect(zSlider, SIGNAL(valueChanged(int)), glWidget, SLOT(setZRotation(int)));
+    QObject::connect(glWidget, SIGNAL(zRotationChanged(int)), zSlider, SLOT(setValue(int)));
    
     QVBoxLayout* mainLayout = new QVBoxLayout;
     QHBoxLayout* layout2 = new QHBoxLayout;
@@ -96,7 +95,8 @@ qtWindow::qtWindow()
 }
 
 // -----------------------------------------------------------------------------
-QSlider *qtWindow::createSlider ()
+QSlider*
+qtWindow::createSlider ()
 {
     QSlider *slider = new QSlider(Qt::Vertical);
     slider->setRange(0, 360 * 16);
@@ -108,7 +108,8 @@ QSlider *qtWindow::createSlider ()
 }
 
 // -----------------------------------------------------------------------------
-void qtWindow::keyPressEvent(QKeyEvent *e)
+void
+qtWindow::keyPressEvent(QKeyEvent *e)
 {
     if (e->key() == Qt::Key_Escape)
     	{ close(); }

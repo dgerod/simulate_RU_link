@@ -18,7 +18,7 @@
 //
 // This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-//https://www.google.es/search?client=ubuntu&channel=fs&q=qt+opengl+zoom&ie=utf-8&oe=utf-8&gfe_rd=cr&ei=vOSJU8-tEojA8gfpp4HAAQ
+//
 // =============================================================================
 
 #include <math.h>
@@ -27,9 +27,8 @@
 #include <QtDebug>
 #include <QTextStream>
 #include <GL/glut.h>
-
 #include "helpers.h"
-#include "glwidget.h"
+#include "GlWidget.h"
 
 // -----------------------------------------------------------------------------
 GLWidget::GLWidget (QWidget* Parent)
@@ -42,8 +41,8 @@ GLWidget::GLWidget (QWidget* Parent)
     _isMovementActive = false;
 
     _timer = new QTimer(this);
-    _timer->setInterval(10);
-    connect(_timer, SIGNAL(timeout()), this, SLOT(executeMovement()));
+    _timer->setInterval(500);
+    QObject::connect(_timer, SIGNAL(timeout()), this, SLOT(executeMovement()));
 
     // Load kinematics model and prepare graphics
     _sim._model.initialize(1, 2, 1);
@@ -454,7 +453,10 @@ GLWidget::executeMovement ()
   KDL::JntArray q(_sim._model._joints);
   KDL::Frame frame;
 
-  _sim._move.nextPosition(_sim._move._Tk + 1.0, q);
+  if( _sim._move.nextPosition(_sim._move._Tk + 1.0, q) == false )
+  {
+      _timer->stop();
+  }
 
   if( _sim._model.jntsToCart(q, frame) == true)
   {
@@ -463,12 +465,6 @@ GLWidget::executeMovement ()
 
       printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
       std::cout << frame << std::endl;
-
-      // Check if trajectory is finished
-      if( _sim._move._Tk >= _sim._move._Tt)
-      {
-          _timer->stop();
-      }
 
       QString msg;
       frame_to_QString(frame, msg);

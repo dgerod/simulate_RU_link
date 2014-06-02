@@ -28,7 +28,7 @@
 #include <QTimer>
 #include <QLineEdit>
 #include <QPlainTextEdit>
-#include "glwidget.h"
+#include "GlWidget.h"
 
 class QSlider;
 class GLWidget;
