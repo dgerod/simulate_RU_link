@@ -50,11 +50,13 @@ public slots:
 
     void updatePosInput (const QString& Input);
     void activeMovement (bool IsActive);
-    void moveByJoints ();
-    void moveByPose ();
 
-    void changeStatusByJoints ();
+    void moveByJoints ();
+    void changeStateByJoints ();
     void executeMoveByJoints ();
+    void moveByPose ();
+    void changeStateByPose ();
+
     void executeMovement ();
 
 signals:

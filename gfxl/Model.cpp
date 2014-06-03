@@ -176,11 +176,6 @@ Model::update (const KinematicsModel& Model, const KDL::JntArray& Joints)
 
         frame_to_opengl(frame, pose);
         _objects[ldx]->setPose(pose);
-
-        /*
-        printf("p(0) = %f, p(1) = %f, p(2) = %f, p(3) = %f, p(4) = %f, p(5) = %f\n",
-                pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
-        */
     }
 
     qDebug( "[Model::update] end" );

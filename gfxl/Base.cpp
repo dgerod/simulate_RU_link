@@ -36,7 +36,7 @@ Object::setPose (double Pose[6])
 void
 Floor::drawIt ()
 {
-    //qDebug( "[Floor::drawIt] end" );
+    qDebug( "[Floor::drawIt] end" );
     double minX, maxX, minY, maxY;
 
     minX = -5; maxX = 5;
@@ -66,7 +66,7 @@ Floor::drawIt ()
     glEnd();
     */
 
-    //qDebug( "[Floor::drawIt] end" );
+    qDebug( "[Floor::drawIt] end" );
 }
 
 // -----------------------------------------------------------------------------
@@ -81,12 +81,6 @@ void
 RefFrame::drawIt ()
 {
     qDebug( "[RefFrame::drawIt] begin" );
-
-    /*
-    for (int idx=0; idx<6; idx++)
-      { std::cout << _pose[idx] << " ";}
-    std::cout << std::endl;
-    */
 
     float origin[3] = {0,0,0};
     float xp[3] = {_length,0,0}, yp[3] = {0,_length,0}, zp[3] = {0,0,_length};
@@ -103,15 +97,15 @@ RefFrame::drawIt ()
     glLineWidth (2.0);
 
     glBegin (GL_LINES);
-        glColor3f (1,0,0); // X axis is red.
-        glVertex3fv (origin);
-        glVertex3fv (xp);
-        glColor3f (0,1,0); // Y axis is green.
-        glVertex3fv (origin);
-        glVertex3fv (yp);
-        glColor3f (0,0,1); // z axis is blue.
-        glVertex3fv (origin);
-        glVertex3fv (zp);
+    glColor3f (1,0,0);
+    glVertex3fv (origin);
+    glVertex3fv (xp);
+    glColor3f (0,1,0);
+    glVertex3fv (origin);
+    glVertex3fv (yp);
+    glColor3f (0,0,1);
+    glVertex3fv (origin);
+    glVertex3fv (zp);
     glEnd();
 
     glPopMatrix ();

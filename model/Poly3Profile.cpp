@@ -21,11 +21,6 @@ Poly3Profile::initialize (const Poly3Profile::Data Initial, const Data Final,
     _timeInSec = TotalTimeInSec;
     Success = calcCoeficients ( &_initial, &_final, _timeInSec );
 
-    std::cout << _coeficients.a0 << std::endl;
-    std::cout << _coeficients.a1 << std::endl;
-    std::cout << _coeficients.a2 << std::endl;
-    std::cout << _coeficients.a3 << std::endl;
-
     qDebug( "[Poly3Profile::initialize] end" );
     return Success;
 }
@@ -40,11 +35,6 @@ Poly3Profile::calcPosition (const double ElapsedTimeInSec, double* Pos)
 
     *Pos = _coeficients.a0 + timeSec *(_coeficients.a1 + timeSec *
                             (_coeficients.a2 + (timeSec * _coeficients.a3)) );
-
-    //vel = this->_coeficients.a1 + timeSec *
-    //		( (2.0 * this->_coeficients.a2)  + (timeSec * (3.0 * this->_coeficients.a3) ));
-
-    std::cout << "Position: " << *Pos << std::endl;
 
     qDebug( "[Poly3Profile::calcPosition] end" );
     return Success;

@@ -259,7 +259,7 @@ GLWidget::moveByJoints ()
 {
     if( _isMovementActive == false )
     {
-        emit changeStatusByJoints();
+        emit changeStateByJoints();
     }
     else
     {
@@ -284,7 +284,7 @@ GLWidget::executeMoveByJoints ()
 
    if( proc_position_input(_inputPos, numJoints, inputs) == false)
    {
-       emit showMessage("ERROR - Incorrect input for DK");
+       emit showMessage("ERROR - Incorrect input");
        return;
    }
 
@@ -297,6 +297,8 @@ GLWidget::executeMoveByJoints ()
    printf("qf(0) = %f, qf(1) = %f, qf(2) = %f\n", qf(0), qf(1), qf(2));
 
    // Prepare trajectory
+   // ----------------------------------------------------
+
    double Tt = 10;
    _sim._move.start(_sim._model._joints, qf, 10);
    // Activate time
@@ -307,51 +309,41 @@ GLWidget::executeMoveByJoints ()
 
 // -----------------------------------------------------------------------------
 void
-GLWidget::changeStatusByJoints ()
+GLWidget::changeStateByJoints ()
 {
     qDebug( "[GLWidget::changeStatusByJoints] start" );
 
-    QString msg;
-    int nj = _sim._model._chain.getNrOfJoints();
-    KDL::JntArray q(nj);
-    KDL::Frame frame;
+    int numJoints;
+    double inputs[3];
 
-    // Validate input
+    numJoints = _sim._model._chain.getNrOfJoints();
+
+    // Validate input and prepare joints
     // ----------------------------------------------------
 
-    QRegExp rx("[, ]");
-    QStringList list = _inputPos.split(rx, QString::SkipEmptyParts);
+    if( proc_position_input(_inputPos, numJoints, inputs) == false)
+     {
+         emit showMessage("ERROR - Incorrect input");
+         return;
+     }
 
-    if( list.length() != nj )
-    {
-        std::cout << "ERROR: Incorrect input = " << _inputPos.toStdString() << std::endl;
-        emit showMessage("ERROR - Incorrect input for DK");
-        return;
-    }
+     KDL::JntArray q(numJoints);
+     KDL::Frame frame;
 
-    for(unsigned int idx=0; idx<list.length(); idx++)
-    {
-        bool validate;
-        q(idx) = list[idx].toDouble(&validate);
+     for(unsigned int jdx=0; jdx<numJoints; jdx++)
+       {  q(jdx) = inputs[jdx]; }
 
-        if( validate == false )
-        {
-            emit showMessage("ERROR - Incorrect input for DK");
-            return;
-        }
-    }
+     printf("q(0) = %f, q(1) = %f, q(2) = %f\n", q(0), q(1), q(2));
 
-    printf("q(0) = %f, q(1) = %f, q(2) = %f\n", q(0), q(1), q(2));
-
-    //
+    // Solve DK
     // ----------------------------------------------------
 
     if( _sim._model.jntsToCart(q, frame) == true)
     {
+        QString msg;
+
         _sim._model._joints = q;
         _sim._model._tcs0 = frame;
-
-        //_gfx._model.update(_sim._model, _sim._model._joints);
 
         printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
         std::cout << frame << std::endl;
@@ -375,51 +367,51 @@ GLWidget::changeStatusByJoints ()
 void
 GLWidget::moveByPose ()
 {
-    QString msg;
-    KDL::Frame frame;
-    int nj = _sim._model._chain.getNrOfJoints();
-    KDL::JntArray q(nj);
+    if( _isMovementActive == false )
+    {
+        emit changeStateByPose();
+    }
+    else
+    {
+        emit showMessage("ERROR - Not implemented");
+    }
+}
 
-    // Validate input
+// -----------------------------------------------------------------------------
+void
+GLWidget::changeStateByPose ()
+{
+    int numJoints;
+    double inputs[6];
+
+    // Validate input and prepare pose
     // ----------------------------------------------------
 
-    double pose[6];
-    QRegExp rx("[, ]");
-    QStringList list = _inputPos.split(rx, QString::SkipEmptyParts);
-
-    if( list.length() != 6 )
+    if( proc_position_input(_inputPos, 6, inputs) == false)
     {
-        std::cout << "ERROR: Incorrect input = " << _inputPos.toStdString() << std::endl;
-        emit showMessage("ERROR - Incorrect input for IK.");
+        emit showMessage("ERROR - Incorrect input");
         return;
     }
 
-    for(unsigned int idx=0; idx<list.length(); idx++)
-    {
-        bool validate;
-        pose[idx] = list[idx].toDouble(&validate);
+    numJoints = _sim._model._chain.getNrOfJoints();
 
-        if( validate == false )
-        {
-            emit showMessage("ERROR - Incorrect input for IK.");
-            return;
-        }
-    }
+    KDL::Frame frame;
+    KDL::JntArray q(numJoints);
 
     printf("p(0) = %f, p(1) = %f, p(2) = %f, p(3) = %f, p(4) = %f, p(5) = %f\n",
-        pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
+        inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5]);
 
-    frame.p = KDL::Vector(pose[0],pose[1],pose[2]);
-    frame.M = KDL::Rotation::EulerZYX (pose[5], pose[4], pose[3]);
+    frame.p = KDL::Vector(inputs[0],inputs[1],inputs[2]);
+    frame.M = KDL::Rotation::EulerZYX (inputs[5], inputs[4], inputs[3]);
 
     // ----------------------------------------------------
 
     if( _sim._model.cartTojnts(frame, q) == true)
     {
+        QString msg;
+
         _sim._model._tcs0 = frame;
         _sim._model._joints = q;
-
-        //_gfx._model.update(_sim._model, _sim._model._joints);
 
         std::cout << frame << std::endl;
         printf("q(0)=%f,q(1)=%f,q(2)=%f\n", q(0), q(1), q(2));
