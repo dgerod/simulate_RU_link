@@ -13,6 +13,8 @@ class Graphics
 {
 public:
 
+    void draw ();
+
     Floor _floor;
     RefFrame _origin;
     Model _model;

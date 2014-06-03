@@ -17,7 +17,7 @@ INCLUDE(${QT_USE_FILE})
 SET(MOC_HDRS  GlWidget.h  QtWindow.h)
 
 # Regular cpp sources
-SET(CPP_SRCS  QtWindow.cpp GlWidget.cpp Simulation.cpp Graphics.cpp helpers.cpp gfxl/Base.cpp gfxl/Model.cpp  
+SET(CPP_SRCS  QtWindow.cpp GlWidget.cpp Graphics.cpp helpers.cpp gfxl/Base.cpp gfxl/Model.cpp  
               model/KinematicsModel.cpp model/Movement.cpp model/Poly3Profile.cpp)
 
 # Run moc on header files with Q_OBJECT

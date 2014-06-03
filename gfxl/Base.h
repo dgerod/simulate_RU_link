@@ -20,10 +20,8 @@ public:
 
     void setPosition (double X, double Y, double Z);
     void setPose (double Pose[6]);
-    void setPose (KDL::Frame Frame) {};
 
-    //
-    // -----------------------------------
+protected:
 
     double _pose[6];
 
@@ -36,9 +34,6 @@ public:
 
     RefFrame ();
     void drawIt();
-
-    //
-    // -----------------------------------
 
     double _length;
 };

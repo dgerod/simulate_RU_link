@@ -51,11 +51,10 @@ Movement::start (KDL::JntArray& Qi, KDL::JntArray& Qf, double Tt)
 {
     qDebug( "[Movement::start] start" );
     bool Success = true;
+    Poly3Profile::Data init, final;
 
     _Tk = 0;
     _Tt = Tt;
-
-    Poly3Profile::Data init, final;
 
     for(unsigned int jdx=0; jdx<_numJoints; jdx++)
     {

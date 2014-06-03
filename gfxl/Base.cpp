@@ -3,6 +3,7 @@
 // =============================================================================
 
 #include <math.h>
+#include <QDebug>
 #include <GL/glut.h>
 #include "common.h"
 #include "Base.h"
@@ -35,8 +36,7 @@ Object::setPose (double Pose[6])
 void
 Floor::drawIt ()
 {
-    //std::cout << "[Floor::drawIt] end" << std::endl;
-
+    //qDebug( "[Floor::drawIt] end" );
     double minX, maxX, minY, maxY;
 
     minX = -5; maxX = 5;
@@ -44,10 +44,10 @@ Floor::drawIt ()
 
     glColor3f(.3,.3,.3);
     glBegin (GL_QUADS);
-        glVertex3f ( minX, maxY, -0.1);
-        glVertex3f ( minX, minY, -0.1);
-        glVertex3f ( maxX, minY, -0.1);
-        glVertex3f ( maxX, maxY, -0.1);
+    glVertex3f ( minX, maxY, -0.1);
+    glVertex3f ( minX, minY, -0.1);
+    glVertex3f ( maxX, minY, -0.1);
+    glVertex3f ( maxX, maxY, -0.1);
     glEnd ();
 
     int num = 10;
@@ -63,10 +63,10 @@ Floor::drawIt ()
         glVertex3f(0,i,0);
         glVertex3f(maxX,i,0);
     };
-    glEnd();tx = _pose[0]; ty = _pose[1]; tz = _pose[2];
+    glEnd();
     */
 
-    //std::cout << "[Floor::drawIt] end" << std::endl;
+    //qDebug( "[Floor::drawIt] end" );
 }
 
 // -----------------------------------------------------------------------------
@@ -80,12 +80,13 @@ RefFrame::RefFrame ()
 void
 RefFrame::drawIt ()
 {
-    std::cout << "[RefFrame::drawIt] begin" << std::endl;
+    qDebug( "[RefFrame::drawIt] begin" );
 
-
+    /*
     for (int idx=0; idx<6; idx++)
       { std::cout << _pose[idx] << " ";}
     std::cout << std::endl;
+    */
 
     float origin[3] = {0,0,0};
     float xp[3] = {_length,0,0}, yp[3] = {0,_length,0}, zp[3] = {0,0,_length};
@@ -115,7 +116,7 @@ RefFrame::drawIt ()
 
     glPopMatrix ();
 
-   std::cout << "[RefFrame::drawIt] end" << std::endl;
+    qDebug( "[RefFrame::drawIt] end" );
 }
 
 // -----------------------------------------------------------------------------

@@ -205,13 +205,8 @@ GLWidget::paintGL ()
     // Draw scene
     // ----------------------------------------------
 
-    // Update model
     _gfx._model.update(_sim._model, _sim._model._joints);
-
-     // And draw all
-    _gfx._floor.drawIt();
-    //_gfx._origin.drawIt();
-    _gfx._model.drawIt();
+    _gfx.draw();
 
     glFinish();
 }
@@ -235,7 +230,7 @@ GLWidget::mouseMoveEvent (QMouseEvent* Event)
         setXRotation(_xRot + 8 * dy);
         setYRotation(_yRot + 8 * dx);
     }
-	else if (Event->buttons() & Qt::RightButton)
+    else if (Event->buttons() & Qt::RightButton)
     {
         setXRotation(_xRot + 8 * dy);
         setZRotation(_zRot + 8 * dx);
