@@ -39,18 +39,36 @@ Floor::drawIt ()
     qDebug( "[Floor::drawIt] end" );
     double minX, maxX, minY, maxY;
 
-    minX = -5; maxX = 5;
-    minY = -5; maxY = 5;
+    // Draw solid
 
-    glColor3f(.3,.3,.3);
-    glBegin (GL_QUADS);
-    glVertex3f ( minX, maxY, -0.1);
-    glVertex3f ( minX, minY, -0.1);
-    glVertex3f ( maxX, minY, -0.1);
-    glVertex3f ( maxX, maxY, -0.1);
-    glEnd ();
+    minX = -20; maxX = 20;
+    minY = -20; maxY = 20;
 
-    int num = 10;
+    glColor3f(0.3, 0.3, 0.3);
+    glBegin(GL_QUADS);
+    glVertex3f( minX, maxY, -0.2);
+    glVertex3f( minX, minY, -0.2);
+    glVertex3f( maxX, minY, -0.2);
+    glVertex3f( maxX, maxY, -0.2);
+    glEnd();
+
+    // Draw grid
+
+    glPushMatrix();
+    glTranslatef( -100/2, -100/2, -0.1);
+
+    glBegin(GL_LINES);
+    glColor3f(0.5, 0.5, 0.5);
+    for(int i = 0; i <= 100; i += 10)
+    {
+        glVertex3f((float)i, 0.0f, 0.0f);
+        glVertex3f((float)i, 100.0f, 0.0f);
+        glVertex3f(0.0f, (float)i, 0.0f);
+        glVertex3f(100.0f, (float)i, 0.0f);
+    }
+    glEnd();
+
+    glPopMatrix();
 
     /*
     glBegin(GL_LINES);
@@ -73,7 +91,14 @@ Floor::drawIt ()
 RefFrame::RefFrame ()
     : Object()
 {
-    _length = 1.0;
+    _length = 100.0;;
+}
+
+// -----------------------------------------------------------------------------
+RefFrame::RefFrame (double L)
+    : Object()
+{
+    _length = L;
 }
 
 // -----------------------------------------------------------------------------

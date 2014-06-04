@@ -35,7 +35,7 @@ GLWidget::GLWidget (QWidget* Parent)
 	: QGLWidget(Parent)
 {
     // Camera
-    _camPos[0] = 5; _camPos[1] = 5; _camPos[2] = 2;
+    _camPos[0] = 40; _camPos[1] = 40; _camPos[2] = 10;
     _xRot = 0; _yRot = 0; _zRot = 0; _zoom = 1;
 
     // Execute movement based on joints
@@ -45,12 +45,12 @@ GLWidget::GLWidget (QWidget* Parent)
     QObject::connect(_timer, SIGNAL(timeout()), this, SLOT(executeMovement()));
 
     // Load kinematics model and prepare graphics
-    _sim._model.initialize(1, 2, 1);
-    //_sim._model.initialize(10, 20, 5);
+    //_sim._model.initialize(1, 2, 1);
+    _sim._model.initialize(10, 20, 5);
     _sim._move.initialize( _sim._model );
 
     // Frame in the originexecuteMovement
-    _gfx._origin._length = 10.0;
+    _gfx._origin._length = 50.0;
     _gfx._origin.setPosition(0, 0, 0);
     // Represent model
     _gfx._model.initialize( _sim._model );
@@ -147,9 +147,9 @@ GLWidget::setZoom (int Increment)
 void
 GLWidget::initializeGL ()
 {
-    glClearColor(0.1, 0.1, 0.1, 0.0);	// Sets background color to blue
-    glClearDepth(1.0);			// Depth Buffer Setup
-    glEnable(GL_DEPTH_TEST); 	        // Enables hidden-surface removal
+    glClearColor(0.1, 0.1, 0.1, 0.0);
+    glClearDepth(1.0);
+    glEnable(GL_DEPTH_TEST);
 
     //glShadeModel(GL_FLAT);
     //glCullFace(GL_BACK);  //to display back face. We can put also GL_FRONT for front faces
@@ -165,18 +165,11 @@ void
 GLWidget::resizeGL (int Width, int Height)
 {
     int side = qMin(Width, Height);
-    glViewport((Width - side) / 2, (Height - side) / 2, side, side);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(90.0, Width/Height, 1, 100);
-      
-    glMatrixMode(GL_MODELVIEW);	
-	
-    /*
-    gluPerspective(90.0, Width/Height, 1, 100);
-    glViewport(0, 0, Width, Height);
-    */
+    glViewport((Width - side) / 2, (Height - side) / 2, side, side);
 }
 
 // -----------------------------------------------------------------------------
@@ -187,7 +180,7 @@ GLWidget::paintGL ()
     // ----------------------------------------------
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glMatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     // Set view

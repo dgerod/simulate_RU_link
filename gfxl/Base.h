@@ -33,6 +33,7 @@ class RefFrame : public Object
 public:
 
     RefFrame ();
+    RefFrame (double L);
     void drawIt();
 
     double _length;

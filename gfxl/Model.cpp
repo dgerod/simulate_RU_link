@@ -63,26 +63,41 @@ JointR::JointR ()
 }
 
 // -----------------------------------------------------------------------------
+JointR::JointR (double H, double R)
+    : Joint()
+{
+  _length = 3 * H;
+  if( R > H )
+    { _length = 3 * R; };
+
+  _height = H;
+  _radius = R;
+}
+
+// -----------------------------------------------------------------------------
 void
 JointR::drawIt ()
 {
   // Draw cylinder
   glPushMatrix();
-  glTranslatef(_pose[0], _pose[1], _pose[2]);
+  glTranslatef(_pose[0], _pose[1], _pose[2] - _height/2);
   glRotatef(_pose[5], 0,0,1);
   glRotatef(_pose[4], 0,1,0);
   glRotatef(_pose[3], 1,0,0);
   glColor3f(0.8,0.6,0.0);
-  gluCylinder(gluNewQuadric(), 0.1, 0.1, 0.1, 10, 25);
+  gluCylinder(gluNewQuadric(), _radius, _radius, _height, 10, 25);
   glPopMatrix();
 
   // Draw frame of the joint
   Joint::drawIt();
 }
+
 // -----------------------------------------------------------------------------
-JointU::JointU ()
+JointU::JointU (double R)
     : Joint()
 {
+  _length = R*4;
+  _radius = R;
 }
 
 // -----------------------------------------------------------------------------
@@ -96,7 +111,7 @@ JointU::drawIt ()
   glRotatef(_pose[4], 0,1,0);
   glRotatef(_pose[3], 1,0,0);
   glColor3f(0.8,0.6,0.0);
-  gluSphere(gluNewQuadric(), 0.1, 10, 25);
+  gluSphere(gluNewQuadric(), _radius, 10, 25);
   glPopMatrix();
 
   // Draw frame of the joint
@@ -118,11 +133,11 @@ Model::initialize (const KinematicsModel& KinemModel)
     double pose[6];
     KDL::Frame frame;
 
-    _objects.push_back(new JointR());
-    _objects.push_back(new JointR());
-    _objects.push_back(new JointU());
-    _objects.push_back(new JointU());
-    _objects.push_back(new RefFrame());
+    _objects.push_back(new JointR(10/2, 5/2));
+    _objects.push_back(new JointR(0,0));
+    _objects.push_back(new JointU(5/2));
+    _objects.push_back(new JointU(0));
+    _objects.push_back(new RefFrame(15));
 
     unsigned int nl = KinemModel._chain.getNrOfSegments();
     for( unsigned int ldx=0; ldx<nl; ldx++)

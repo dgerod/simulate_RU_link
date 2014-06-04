@@ -29,7 +29,10 @@ class JointR : public Joint
 public:
 
     JointR ();
+    JointR (double H, double R);
     void drawIt();
+
+    double _height, _radius;
 };
 
 // -----------------------------------------------------------------------------
@@ -38,7 +41,10 @@ class JointU : public Joint
 public:
 
     JointU ();
+    JointU (double R);
     void drawIt();
+
+    double _radius;
 };
 
 // -----------------------------------------------------------------------------

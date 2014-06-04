@@ -8,9 +8,9 @@
 void
 Graphics::draw()
 {
-  _origin.drawIt();
-  _floor.drawIt();
-  _model.drawIt();
+    _origin.drawIt();
+    _floor.drawIt();
+    _model.drawIt();
 }
 
 // =============================================================================
