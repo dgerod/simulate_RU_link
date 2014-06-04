@@ -13,7 +13,7 @@ class KinematicsModel
 public:
 
     KinematicsModel();
-    bool initialize (double L1, double L2, double L3);
+    bool initialize (double Pos[3], double L1, double L2);
     bool jntsToCart (const KDL::JntArray& Joints, KDL::Frame& Pose);
     bool cartTojnts (const KDL::Frame& Pose, KDL::JntArray& Joints);
 

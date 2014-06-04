@@ -45,8 +45,8 @@ GLWidget::GLWidget (QWidget* Parent)
     QObject::connect(_timer, SIGNAL(timeout()), this, SLOT(executeMovement()));
 
     // Load kinematics model and prepare graphics
-    //_sim._model.initialize(1, 2, 1);
-    _sim._model.initialize(10, 20, 5);
+    double position[3] = {10.0, 0.0, 2.0};
+    _sim._model.initialize(position, 20, 5);
     _sim._move.initialize( _sim._model );
 
     // Frame in the originexecuteMovement

@@ -20,7 +20,7 @@ KinematicsModel::KinematicsModel ()
 
 // -----------------------------------------------------------------------------
 bool
-KinematicsModel::initialize (double L1, double L2, double L3)
+KinematicsModel::initialize (double Pos[3], double L1, double L2)
 {
     qDebug( "[KinematicsModel::initialize] start" );
     bool Success = false;
@@ -28,14 +28,14 @@ KinematicsModel::initialize (double L1, double L2, double L3)
     // Define chain
 
     // Origin
-    _chain.addSegment( Segment( Joint(Joint::None),Frame(Vector(L1, 0, 0)) ));
+    _chain.addSegment( Segment( Joint(Joint::None),Frame(Vector(Pos[0], Pos[1], Pos[2])) ));
     // Revolution joint (1 dof)
-    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame(Vector(L2, 0, 0)) ));
+    _chain.addSegment( Segment( Joint(Joint::RotZ),Frame(Vector(L1, 0, 0)) ));
     /// Universal joint (2 dof)
     _chain.addSegment( Segment( Joint(Joint::RotZ),Frame(Vector(0, 0, 0)) ));
     _chain.addSegment( Segment( Joint(Joint::RotY),Frame(Vector(0, 0, 0)) ));
-    // Tool
-    _chain.addSegment( Segment( Joint(Joint::None),Frame(Vector(L3, 0, 0)) ));
+    // End-effector
+    _chain.addSegment( Segment( Joint(Joint::None),Frame(Vector(L2, 0, 0)) ));
 
     // Initialize joints to zero
 
